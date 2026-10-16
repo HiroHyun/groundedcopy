@@ -12,6 +12,8 @@ answered with it and without it, and download the full record of that run.
 
 ## Credits
 
+- Questions and human answers: from five Stack Exchange sites, under CC BY-SA, with a link to
+  each post.
 - Pictures: four prints from the Art Institute of Chicago, in the public domain.
 - Fonts: Newsreader, Instrument Sans, IBM Plex Mono, Noto Serif SC and Noto Sans SC, under the
   SIL Open Font License.
@@ -21,6 +23,6 @@ answered with it and without it, and download the full record of that run.
 
 ## License
 
-The code is under [AGPL-3.0-only](LICENSE), the same licence as the plugin. The fonts, icons,
-pictures and logos keep their own licences, listed above, and the Grounded Copy name and mark
-are not covered by it.
+The code is under [AGPL-3.0-only](LICENSE), the same licence as the plugin. The Stack Exchange
+posts, fonts, icons, pictures and logos keep their own licences, listed above, and the Grounded
+Copy name and mark are not covered by it.
