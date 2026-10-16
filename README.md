@@ -10,18 +10,6 @@ agents say things clearly and get to the point.
 On the site you can switch the plugin on one sentence at a time, watch 300 everyday questions
 answered with it and without it, and download the full record of that run.
 
-## Run it on your computer
-
-You need Node.js 22.22 or later.
-
-```sh
-npm ci
-npm run dev
-```
-
-Then open http://localhost:4321/groundedcopy/. Every push to `main` publishes the site with
-GitHub Pages.
-
 ## Credits
 
 - Pictures: four prints from the Art Institute of Chicago, in the public domain.
@@ -30,3 +18,9 @@ GitHub Pages.
 - Icons: [Lucide](https://lucide.dev), under the ISC License.
 - The OpenAI logo belongs to OpenAI, and Claude Code to Anthropic. This website is an
   independent project.
+
+## License
+
+The code is under [AGPL-3.0-only](LICENSE), the same licence as the plugin. The fonts, icons,
+pictures and logos keep their own licences, listed above, and the Grounded Copy name and mark
+are not covered by it.
