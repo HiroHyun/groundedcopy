@@ -1,0 +1,88 @@
+---
+const { t } = Astro.props;
+const f = t.footer;
+const repo = 'https://github.com/HiroHyun/grounded-copy';
+const base = import.meta.env.BASE_URL;
+---
+<footer class="footer" data-field="night">
+  <div class="wrap">
+    <a class="lockup" href="#top" aria-label="Grounded Copy">
+      <svg class="mark" viewBox="0 0 68 77" aria-hidden="true">
+        <rect x="29" y="0" width="10" height="22" rx="1" />
+        <rect x="0" y="21" width="68" height="12" rx="6" />
+        <rect x="12" y="41" width="44" height="12" rx="6" />
+        <circle cx="34" cy="67" r="10" />
+      </svg>
+      <span class="word" aria-hidden="true">Grounded Copy</span>
+    </a>
+    <div class="grid groups">
+      <nav class="group github" aria-labelledby="footer-github">
+        <h2 id="footer-github">{f.github}</h2>
+        <ul>
+          {f.links.map(([label, path]: [string, string]) => <li><a class="link" href={`${repo}/blob/main/${path}`}>{label}</a></li>)}
+          <li><a class="link" href={repo}>{f.source}</a></li>
+        </ul>
+      </nav>
+      <nav class="group langs" aria-labelledby="footer-language">
+        <h2 id="footer-language">{f.language}</h2>
+        <ul>
+          <li><a class="link" href={base} hreflang="en" lang="en" aria-current={t.lang === 'en' ? 'page' : undefined}>English</a></li>
+          <li><a class="link" href={`${base}zh/`} hreflang="zh-Hans" lang="zh-Hans" aria-current={t.lang === 'zh' ? 'page' : undefined}>简体中文</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="last">
+      <div class="made"><p>{f.made}</p><p class="marks">{f.marks}</p></div>
+      <div class="ends">
+        <a class="site plate" href="https://hirohyun.com">
+          <span class="tile" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><path fill="#2C4A9A" d="M10 12h8v40h-8zM32 12h8v40h-8zM10 28h30v8H10z" /><path fill="#D99A3D" d="M46 44h8v8h-8z" /></svg></span>
+          hirohyun.com
+        </a>
+        <a class="plate" href="#top"><span class="label">{f.top}</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer { padding-block: var(--section) 1.5rem; }
+  .lockup { display: flex; align-items: center; gap: clamp(1rem, 3vw, 3rem); text-decoration: none; color: var(--ink); }
+  .mark { width: clamp(3.5rem, 1rem + 6vw, 8rem); height: auto; flex: none; fill: var(--bone); }
+  .mark circle { fill: var(--amber); }
+  .word {
+    font-family: var(--display);
+    font-weight: 600;
+    font-variation-settings: 'opsz' 72;
+    font-size: var(--step-display);
+    line-height: 0.9;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+  }
+  /* Two labelled groups on the page grid: the second starts where every section's right half does. */
+  .groups { margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); row-gap: 2rem; align-items: start; }
+  .github { grid-column: 1 / span 6; }
+  .langs { grid-column: 7 / span 6; }
+  .group h2 { font-size: var(--step-lead); line-height: 1.2; color: var(--muted); margin-bottom: 1rem; }
+  .group ul { display: grid; gap: 0.7rem; }
+  .github ul { grid-template-columns: repeat(2, max-content); column-gap: clamp(2rem, 1rem + 4vw, 6rem); }
+  [aria-current='page'] { text-decoration-color: transparent; }
+  [aria-current='page']::before { content: ''; display: inline-block; width: 0.45em; height: 0.45em; margin-right: 0.5em; border-radius: 50%; background: var(--amber); vertical-align: 0.12em; }
+  .last { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 3rem; color: var(--muted); }
+  .ends { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .last .plate { background: var(--bone); color: var(--night); }
+  /* The author's mark on a small rounded tile, like an app icon. */
+  .made { display: grid; gap: 0.35rem; }
+  .marks { font-size: var(--step-small); }
+  /* Even room above, below and left of the tile, and the same height as the plate beside it. */
+  .site { padding: 0.45rem 1.6em 0.45rem 0.65rem; gap: 0.7rem; }
+  .tile { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 0.6rem; background: #fff; box-shadow: inset 0 -0.15rem 0 rgb(8 20 17 / 0.12); } /* taste-skill-ignore: raised tile, asked for in review */
+  .tile svg { width: 1.35rem; height: 1.35rem; }
+  @media (hover: hover) and (pointer: fine) { .last .plate:hover { background: var(--amber); } }
+  @media (max-width: 760px) {
+    .github, .langs { grid-column: 1 / -1; }
+    .github ul { grid-template-columns: 1fr; }
+    .lockup { flex-direction: column; align-items: flex-start; }
+    .mark { width: 3.5rem; }
+    .word { font-size: 12.5vw; }
+  }
+</style>

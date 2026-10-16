@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from './Hero.astro';
+import Switches from './Switches.astro';
+import RunMap from './RunMap.astro';
+import Hourglass from './Hourglass.astro';
+import HowItRuns from './HowItRuns.astro';
+import WhereItWorks from './WhereItWorks.astro';
+import Modes from './Modes.astro';
+import Record from './Record.astro';
+import Install from './Install.astro';
+import Footer from './Footer.astro';
+const { t } = Astro.props;
+---
+<Base t={t}>
+  <main>
+    <Hero t={t} />
+    <Switches t={t} />
+    <RunMap t={t} />
+    <Hourglass t={t} />
+    <HowItRuns t={t} />
+    <WhereItWorks t={t} />
+    <Modes t={t} />
+    <Record t={t} />
+    <Install t={t} />
+  </main>
+  <Footer t={t} />
+</Base>

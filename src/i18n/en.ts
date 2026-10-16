@@ -1,0 +1,143 @@
+// Every visible string on the English page.
+// The drafts in `switches` are the pattern guide's specimens and carry the
+// move the rules cut; they stay as written.
+export default {
+  lang: 'en',
+  htmlLang: 'en',
+  title: 'Grounded Copy: state the fact',
+  description:
+    'A plugin for AI agents. Your agent cuts the half of a sentence that sets the fact against something nobody said. Measured on 300 everyday questions.',
+  skip: 'Skip to the content',
+  nav: { label: 'Sections', results: 'Results', runs: 'How it runs', install: 'Install', other: '中文', otherLang: 'zh-Hans', otherHref: 'zh/', github: 'Source code on GitHub' },
+  hero: {
+    title: ['State', 'the fact'],
+    lead: 'Grounded Copy is a plugin for AI agents. Your agent cuts the half of a sentence that sets the fact against something nobody said.',
+    install: 'Install',
+    results: 'See the results',
+  },
+  switches: {
+    heading: 'Switch the plugin on for each sentence.',
+    label: 'Grounded Copy for this sentence',
+    on: 'On',
+    off: 'Off',
+    bands: [
+      { parts: [['The printer '], ['isn’t broken, it ', 'cut'], ['needs paper.']], note: 'Seven words, now four. The fact already answers the denial.' },
+      { parts: [['The museum '], ['is no longer free', 'cut'], ['charges', 'add'], [' on Sundays.']], note: 'Eight words, now five. A fact sat behind the denial, so the agent states it.' },
+      { parts: [['Rinse the rice'], [' rather than skipping that step', 'cut'], ['.']], note: 'Eight words, now three. Nobody asked about skipping that step.' },
+      { parts: [['Do not mix bleach and ammonia.']], note: 'Kept as written. The warning is the fact.' },
+    ],
+  },
+  results: {
+    heading: '300 everyday questions',
+    statement:
+      'In October 2026 an agent answered 300 questions from five Stack Exchange sites, once with Grounded Copy and once with the plugin off.',
+    off: 'With the plugin off',
+    on: 'With Grounded Copy',
+    count: 'of 300 answers hold a phrase the check reports',
+    dots: ['Each dot is one of the 300 answers.', 'An amber dot holds a phrase the check reports.'],
+    hint: 'Tap a dot to read both answers to its question.',
+    example: 'An example from the run. Tap any dot above to read another.',
+    legend: 'People who answered the same questions on Stack Exchange used such a phrase in {people}% of their answers.',
+    play: 'Play the run',
+    pause: 'Pause',
+    replay: 'Play again',
+    scrub: 'Question',
+    position: 'Question {n} of {total}',
+    asked: 'Asked by {user} on {site} Stack Exchange',
+    user: 'user {id}',
+    excerpt: 'Excerpt from a {n}-word answer',
+    wavy: 'Wavy line: the phrase the check reports. Lighter text: the answer around each excerpt.',
+    readBoth: 'Read both answers',
+    hideBoth: 'Hide both answers',
+    loading: 'Loading the answers…',
+    failed: 'The answers could not be loaded. The record below holds every one.',
+    mapLabel:
+      'Two maps of 300 points, one per question, grouped by site. With the plugin off, 191 points are amber. With Grounded Copy, 42 are.',
+    foot:
+      'The model was gpt-6.1-sol in Codex, at medium effort. Answers ran about the same length: {on} words with the plugin and {off} with it off. The check counts phrases. It does not judge whether an answer is right.',
+  },
+  hourglass: {
+    heading: 'One request per answer',
+    lead: 'The plugin loads the rules before the agent writes, so the answer arrives in one request. A rewrite skill needs a second request.',
+    time: 'less time per answer',
+    tokens: 'fewer tokens per answer',
+    working:
+      'Median time per answer on the same 100 questions: {on} seconds with Grounded Copy, {hz} seconds when the agent writes the answer and then rewrites it with humanizer. Logged tokens per answer: {tOn} against {tHz}.',
+    one: 'Grounded Copy, one request',
+    two: 'Write, then humanizer, two requests',
+    play: 'Play',
+    pause: 'Pause',
+    again: 'Run again',
+    label:
+      'Two hourglasses. Grounded Copy’s sand passes one neck in 42.9 seconds. The write-then-rewrite glass passes two necks in 71.7 seconds. They run ten times faster than the run did.',
+  },
+  runs: {
+    heading: 'How it runs',
+    steps: [
+      'First the rules load, as the session starts.',
+      'Then the agent saves a file.',
+      'The plugin checks the lines the save added.',
+      'The agent rewrites what the check found.',
+    ],
+    yours: 'Sentences you typed stay as you wrote them.',
+    session: 'Session',
+    saved: 'saved',
+    checked: 'checked',
+  },
+  where: {
+    heading: 'Where it works',
+    rows: [
+      { name: 'Claude Code', kind: 'Plugin', text: 'It loads the rules in every session, checks the files the agent saves, and keeps your mode after a restart.' },
+      { name: 'Codex', kind: 'Plugin', text: 'It works the same way. Approve the plugin’s hooks the first time Codex asks.' },
+      { name: 'Other agents', kind: 'Skill', text: 'The Skills CLI installs the rules as a skill. Name it in your request, such as “Use grounded-copy to answer.”' },
+      { name: 'Chat apps', kind: 'Custom instructions', text: 'Paste the rules into the app’s custom instructions. The setup guide shows which part to copy.' },
+    ],
+    ask: 'Use grounded-copy to answer.',
+    instructions: 'Custom instructions',
+    terminal: 'Terminal',
+  },
+  modes: {
+    heading: 'Choose a writing mode',
+    saved: 'Your choice stays saved after a restart.',
+    claude: 'Claude Code',
+    codex: 'Codex',
+    items: [
+      { name: 'chat', text: 'Everyday questions, chat replies and ordinary documents. The default.' },
+      { name: 'copy', text: 'Product pages, marketing copy and other promotional text. It adds checks for slogans and hype words.' },
+      { name: 'off', text: 'Faithful translation, required wording, or a different style.', warn: 'For a faithful translation, set off first. The rules can prompt the agent to remove a comparison that belongs to the original text.' },
+    ],
+  },
+  record: {
+    heading: ['Recount', 'every figure'],
+    holdsTitle: 'What the record holds',
+    holds: 'All 700 answers from the run, 310 answers by people, every log, and the checker pinned by its hash. One command recounts every figure on this page.',
+    download: 'Download the record',
+    size: 'ZIP, {mb} MB',
+  },
+  install: {
+    heading: 'Install it',
+    systems: [
+      { id: 'unix', label: 'macOS', shell: 'Terminal', cmd: 'curl -fsSL https://raw.githubusercontent.com/HiroHyun/grounded-copy/main/install.sh | sh' },
+      { id: 'linux', label: 'Linux', shell: 'Terminal', cmd: 'curl -fsSL https://raw.githubusercontent.com/HiroHyun/grounded-copy/main/install.sh | sh' },
+      { id: 'windows', label: 'Windows', shell: 'PowerShell', cmd: 'irm https://raw.githubusercontent.com/HiroHyun/grounded-copy/main/install.ps1 | iex' },
+    ],
+    choose: 'Operating system',
+    copy: 'Copy',
+    copied: 'Copied',
+    note: 'Paste it into a terminal. The installer needs Python 3 and Node.js with npx. It adds the plugin to Claude Code and Codex when it finds them, and the skill for other agents.',
+  },
+  footer: {
+    made: 'Made by HiroHyun. AGPL-3.0-only.',
+    marks: 'The OpenAI logo belongs to OpenAI, and Claude Code to Anthropic. Grounded Copy is an independent project.',
+    links: [
+      ['Setup guide', 'skills/grounded-copy/references/setup.md'],
+      ['Writing rules', 'skills/grounded-copy/SKILL.md'],
+      ['Pattern guide', 'skills/grounded-copy/references/patterns.md'],
+      ['Release notes', 'RELEASE_NOTES.md'],
+    ],
+    github: 'On GitHub',
+    language: 'Language',
+    source: 'Source code',
+    top: 'Back to top',
+  },
+};

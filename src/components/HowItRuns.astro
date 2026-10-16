@@ -1,0 +1,130 @@
+---
+const { t } = Astro.props;
+const r = t.runs;
+const zh = t.lang === 'zh';
+const draft = zh ? '这家博物馆周日不再是免费的。' : 'The museum is no longer free on Sundays.';
+const hit = zh ? '不再是' : 'no longer';
+// The checker's own message for this finding, as it prints it (its first two sentences).
+const message = zh ? 'A denial or a "just" sets up the claim. Cut that half and state the fact.' : 'The sentence sets the fact against an alternative. State the fact alone.';
+const fixed = zh ? '这家博物馆周日收费。' : 'The museum charges on Sundays.';
+const title = zh ? '# 参观博物馆' : '# Museum visit';
+const [before, after] = draft.split(hit);
+const fields = ['night', 'stone', 'amber', 'sage'];
+---
+<section id="runs" class="runs" data-field="sand" aria-labelledby="runs-title">
+  <div class="wrap head">
+    <h2 id="runs-title" data-rise>{r.heading}</h2>
+  </div>
+  <ol>
+    {r.steps.map((step: string, i: number) => (
+      <li data-field={fields[i]} data-tilt>
+        <p class="step">{step}</p>
+        <div class="card window" data-ui data-lean>
+          {i === 0 && (
+            <>
+              <p class="bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span>{r.session}</span><span class="status">Claude Code</span></p>
+              <pre><samp><span class="dim">Loading grounded prose rules...</span>{'\n'}GROUNDED PROSE ACTIVE — profile: chat<span class="caret" aria-hidden="true"></span></samp></pre>
+            </>
+          )}
+          {i === 1 && (
+            <>
+              <p class="bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span>notes.md</span><span class="status">{r.saved}</span></p>
+              <pre><samp><span class="dim">{title}</span>{'\n'}{draft}</samp></pre>
+            </>
+          )}
+          {i === 2 && (
+            <>
+              <p class="bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span>notes.md</span><span class="status">{r.checked}</span></p>
+              <pre><samp>{before}<mark>{hit}</mark>{after}{'\n'}<span class="dim">notes.md:3: "{hit}"{'\n'}{message}</span></samp></pre>
+            </>
+          )}
+          {i === 3 && (
+            <>
+              <p class="bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span>notes.md</span><span class="status">{r.saved}</span></p>
+              <pre><samp><span class="dim">{title}</span>{'\n'}{fixed}{'\n'}<span class="dim">PASS</span></samp></pre>
+            </>
+          )}
+        </div>
+        {i === 3 && <p class="yours">{r.yours}</p>}
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .head { padding-block: var(--section) clamp(1.5rem, 1rem + 1.5vw, 2.5rem); }
+  h2 { font-size: var(--step-head); }
+  ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); max-width: 120rem; margin-inline: auto; padding: 0 var(--margin) var(--section); }
+  /* Rows shared across the columns keep the steps and the cards level. Each step is a plate with
+     a lit top edge and a darker lower edge, so it reads as a raised tile. */
+  li {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    align-content: start;
+    row-gap: clamp(1.25rem, 1rem + 1vw, 2rem);
+    padding: clamp(1.25rem, 1rem + 1vw, 2rem) clamp(1rem, 0.75rem + 1vw, 1.75rem) clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+    border-radius: 1.25rem;
+    box-shadow: inset 0 2px 0 var(--edge), inset 0 -4px 0 rgb(8 20 17 / 0.16); /* taste-skill-ignore: raised plates, asked for in review */
+    transition: box-shadow var(--t-spring) var(--spring);
+  }
+  .card {
+    background: var(--night);
+    color: var(--bone);
+    padding: 0 0 1.1rem;
+    font-size: var(--step-small);
+    line-height: 1.5;
+    transition: transform var(--t-spring) var(--spring), box-shadow var(--t-spring) var(--spring);
+  }
+  [data-field='night'] .card { background: var(--night-paper); }
+  /* Under the pointer, or on a tap, the plate presses in and its window springs up off it. */
+  @media (hover: hover) and (pointer: fine) {
+    li:hover { box-shadow: inset 0 0.75rem 1.75rem -0.75rem rgb(8 20 17 / 0.4), inset 0 -1px 0 var(--edge); } /* taste-skill-ignore: raised plates, asked for in review */
+    li:hover .card { --lift: -0.75rem; --grow: 1.03; box-shadow: var(--window-up); } /* taste-skill-ignore: layered windows, asked for in review */
+  }
+  li.is-up { box-shadow: inset 0 0.75rem 1.75rem -0.75rem rgb(8 20 17 / 0.4), inset 0 -1px 0 var(--edge); } /* taste-skill-ignore: raised plates, asked for in review */
+  li.is-up .card { --lift: -0.75rem; --grow: 1.04; box-shadow: var(--window-up); } /* taste-skill-ignore: layered windows, asked for in review */
+  li.is-pressed .card { --lift: 0px; --grow: 0.95; transition-duration: 120ms; }
+  .bar { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.1rem; margin-bottom: 0.8rem; background: rgb(255 255 255 / 0.06); border-radius: 0.875rem 0.875rem 0 0; color: var(--sage); }
+  .status { margin-left: auto; }
+  pre { padding: 0 1.1rem; line-height: 1.6; }
+  .dim { color: var(--sage); }
+  mark { background: var(--amber); color: var(--night); border-radius: 3px; padding: 0 0.15em; }
+  .step {
+    font-family: var(--display);
+    font-size: var(--step-lead);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    max-width: 16ch;
+  }
+  :lang(zh-Hans) .step { font-weight: 700; letter-spacing: 0; line-height: 1.35; }
+  .yours { color: var(--muted); max-width: 30ch; }
+
+  @media (max-width: 1100px) {
+    ol { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    ol { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  // On touch, a tap does what the pointer does on a desktop: the plate presses in, then its
+  // window springs up larger. A second tap, or a tap on another plate, sets it down.
+  document.querySelectorAll<HTMLElement>('.runs ol').forEach((list) => {
+    const plates = [...list.querySelectorAll<HTMLElement>('li')];
+    let touch = false;
+    for (const plate of plates) {
+      plate.addEventListener('pointerdown', (e) => {
+        touch = e.pointerType !== 'mouse';
+        if (touch) plate.classList.add('is-pressed');
+      });
+      for (const type of ['pointerup', 'pointercancel', 'pointerleave']) plate.addEventListener(type, () => plate.classList.remove('is-pressed'));
+      plate.addEventListener('click', () => {
+        if (!touch) return;
+        const up = !plate.classList.contains('is-up');
+        plates.forEach((p) => p.classList.toggle('is-up', p === plate && up));
+      });
+    }
+  });
+</script>

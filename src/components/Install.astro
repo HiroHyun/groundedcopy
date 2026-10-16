@@ -1,0 +1,129 @@
+---
+const { t } = Astro.props;
+const i = t.install;
+---
+<section id="install" class="install section" data-field="amber" aria-labelledby="install-title">
+  <div class="wrap grid">
+    <div class="intro">
+      <h2 id="install-title" data-rise>{i.heading}</h2>
+      <p class="note" data-rise style="--i:1">{i.note}</p>
+    </div>
+    <div class="console" data-ui data-tilt>
+      <div class="systems" role="radiogroup" aria-label={i.choose}>
+        {i.systems.map((s: any, n: number) => (
+          <label><input type="radio" name="install-os" value={s.id} checked={n === 0} /><span>{s.label}</span></label>
+        ))}
+        <span class="thumb" aria-hidden="true"></span>
+      </div>
+      <div class="commands">
+        {i.systems.map((s: any) => (
+          <div class="command window" data-os={s.id} data-ui data-lean>
+            <p class="bar">
+              <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+              <span>{s.shell}</span>
+              <button class="copy plate" type="button" hidden data-done={i.copied}><span class="label">{i.copy}</span></button>
+            </p>
+            <pre><code><span class="prompt" aria-hidden="true">{s.id === 'windows' ? 'PS>' : '$'}</span><span class="cmd">{s.cmd}</span></code></pre>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: center; row-gap: 2rem; }
+  .intro { grid-column: 1 / span 5; display: grid; gap: 1.25rem; align-content: start; }
+  h2 { font-size: var(--step-head); }
+  .note { max-width: 36ch; }
+  .console { grid-column: 7 / -1; display: grid; gap: 1rem; min-width: 0; }
+
+  /* The three systems on one recessed track. The chosen one sits on a raised thumb that slides. */
+  .systems {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-self: start;
+    padding: 0.3rem;
+    border-radius: 999px;
+    background: var(--quiet);
+    box-shadow: inset 0 2px 4px rgb(8 20 17 / 0.22), 0 1px 0 rgb(255 255 255 / 0.4); /* taste-skill-ignore: recessed control, asked for in review */
+  }
+  label { position: relative; z-index: 1; display: grid; place-items: center; min-height: 2.75rem; padding: 0 1.4rem; border-radius: 999px; font-weight: 600; cursor: pointer; transition: color var(--t-hover) ease; }
+  label:has(input:checked) { background: var(--night); color: var(--amber); }
+  label:has(input:focus-visible) { outline: 3px solid var(--night); outline-offset: 2px; }
+  input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .thumb { display: none; position: absolute; top: 0.3rem; bottom: 0.3rem; left: 0; border-radius: 999px; background: var(--night); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 2px 4px rgb(8 20 17 / 0.3), 0 6px 14px -4px rgb(8 20 17 / 0.4); transition: transform var(--t-spring) var(--spring), width var(--t-spring) var(--spring); } /* taste-skill-ignore: raised thumb, asked for in review */
+  :global(.js) .thumb { display: block; }
+  :global(.js) label:has(input:checked) { background: none; }
+  @media (hover: hover) and (pointer: fine) { label:hover { color: var(--night); } label:has(input:checked):hover { color: var(--amber); } }
+
+  .commands { display: grid; gap: 0.75rem; }
+  /* The three systems' windows stack like a deck; the chosen one is on top. */
+  .command { background: var(--night); color: var(--bone); min-width: 0; }
+  [data-ui].command { box-shadow: var(--window), 0 1.65rem 0 -1rem rgb(8 20 17 / 0.1); }
+  .bar { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.5rem 0.5rem 1.25rem; background: rgb(255 255 255 / 0.06); border-radius: 0.875rem 0.875rem 0 0; color: var(--sage); }
+  .copy { margin-left: auto; min-height: 2.5rem; padding: 0.5em 1.1em; background: var(--bone); color: var(--night); font-size: var(--step-small); }
+  @media (hover: hover) and (pointer: fine) { .copy:hover { background: var(--amber); } }
+  pre { padding: 1.1rem 1.25rem 1.35rem; overflow-wrap: anywhere; line-height: 1.6; }
+  .prompt { color: var(--amber); margin-right: 0.6em; }
+  :global(.js) .command:not(.is-on) { display: none; }
+
+  @media (max-width: 900px) {
+    .intro, .console { grid-column: 1 / -1; }
+    .systems { justify-self: stretch; }
+    label { padding: 0 0.75rem; }
+  }
+</style>
+
+<script>
+  import { morph, reduce, relabel, SPRING } from '../scripts/motion';
+
+  document.querySelectorAll<HTMLElement>('.install').forEach((section) => {
+    const radios = [...section.querySelectorAll<HTMLInputElement>('input[name="install-os"]')];
+    const commands = [...section.querySelectorAll<HTMLElement>('.command')];
+    const box = section.querySelector<HTMLElement>('.commands')!;
+    const thumb = section.querySelector<HTMLElement>('.thumb')!;
+    const chosen = () => radios.find((r) => r.checked)!;
+    const show = () => commands.forEach((c) => c.classList.toggle('is-on', c.dataset.os === chosen().value));
+    // The thumb takes the size and place of the chosen label.
+    const place = () => {
+      const label = chosen().parentElement!;
+      thumb.style.width = `${label.offsetWidth}px`;
+      thumb.style.transform = `translateX(${label.offsetLeft}px)`;
+    };
+    const pick = (id: string) => radios.forEach((r) => (r.checked = r.value === id));
+    if (/Win/.test(navigator.platform)) pick('windows');
+    else if (/Linux/.test(navigator.platform) && !/Android/.test(navigator.userAgent)) pick('linux');
+    show();
+    thumb.style.transition = 'none';
+    place();
+    requestAnimationFrame(() => (thumb.style.transition = ''));
+    new ResizeObserver(place).observe(section.querySelector('.systems')!);
+    for (const radio of radios) {
+      radio.addEventListener('change', () => {
+        place();
+        const next = commands.find((c) => c.dataset.os === radio.value)!;
+        morph(box, show, next);
+        // The chosen system's window comes up off the deck, as the mode cards do.
+        if (!reduce.matches) next.animate([{ transform: 'translateY(1.6rem) scale(0.94)', opacity: 0.4 }, { transform: 'none', opacity: 1 }], { duration: 640, easing: SPRING });
+      });
+    }
+    for (const command of commands) {
+      const button = command.querySelector<HTMLButtonElement>('.copy')!;
+      const label = button.textContent!;
+      button.hidden = !navigator.clipboard;
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(command.querySelector('.cmd')!.textContent!.trim());
+        } catch {
+          getSelection()?.selectAllChildren(command.querySelector('.cmd')!);
+          return;
+        }
+        relabel(button, button.dataset.done!);
+        command.animate([{ transform: 'scale(0.985)' }, { transform: 'none' }], { duration: 420, easing: SPRING });
+        setTimeout(() => relabel(button, label), 1600);
+      });
+    }
+  });
+</script>

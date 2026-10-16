@@ -1,0 +1,181 @@
+---
+import run from '../data/run.json';
+const { t } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const r = t.results;
+const f = run.featured;
+const siteName = (id: string) => run.sites.find((s) => s.id === id)!.name;
+const fill = (s: string, values: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(values[k]));
+const perSite = run.sites.map((s, i) => ({
+  name: s.name,
+  off: run.questions.filter((q) => q[0] === i && q[2] > 0).length,
+  on: run.questions.filter((q) => q[0] === i && q[3] > 0).length,
+}));
+const marks = (s: string, m: number[][]) => {
+  const out: { text: string; hit: boolean }[] = [];
+  let at = 0;
+  for (const [a, b] of m) { out.push({ text: s.slice(at, a), hit: false }, { text: s.slice(a, b), hit: true }); at = b; }
+  out.push({ text: s.slice(at), hit: false });
+  return out;
+};
+const labels = {
+  play: r.play, pause: r.pause, replay: r.replay, position: r.position, asked: r.asked, user: r.user,
+  excerpt: r.excerpt, wavy: r.wavy, example: r.example, readBoth: r.readBoth, hideBoth: r.hideBoth, loading: r.loading, failed: r.failed, off: r.off, on: r.on,
+};
+---
+<section id="results" class="results section" data-field="night" aria-labelledby="results-title">
+  <div class="wrap grid head">
+    <h2 id="results-title" data-rise>{r.heading}</h2>
+    <p class="statement" data-rise style="--i:1">{r.statement}</p>
+  </div>
+
+  <div class="wrap maps" data-run={JSON.stringify(run.questions)} data-sites={JSON.stringify(run.sites)} data-labels={JSON.stringify(labels)} data-base={base} data-featured={`${f.site}-${f.id}`}>
+    {(['off', 'on'] as const).map((side) => (
+      <figure class="map" data-side={side}>
+        <figcaption class="count">
+          <span class="side">{side === 'off' ? r.off : r.on}</span>
+          <span class="figure num" data-count={side}>{run.totals.flagged[side]}</span>
+          <span class="caption">{r.count}</span>
+        </figcaption>
+        <div class="plot">
+          <ul class="districts">
+            {perSite.map((s, i) => <li>{s.name} <span class="num" data-site-count={`${side}-${i}`}>{side === 'off' ? s.off : s.on}</span></li>)}
+          </ul>
+          <canvas role="img" aria-label={r.mapLabel}></canvas>
+          <p class="tip window" aria-hidden="true" hidden></p>
+        </div>
+      </figure>
+    ))}
+    <div class="controls">
+      <button class="play plate" type="button" hidden><span class="label">{r.play}</span></button>
+      <label class="scrub" hidden>
+        <span class="visually-hidden">{r.scrub}</span>
+        <input type="range" min="1" max={run.totals.questions} step="1" value={run.totals.questions} />
+      </label>
+      <p class="status num" data-hint={r.hint}>{r.hint}</p>
+      <p class="dots"><span class="swatch" aria-hidden="true"></span>{r.dots[0]} <span class="swatch on" aria-hidden="true"></span>{r.dots[1]}</p>
+      <p class="legend">{fill(r.legend, { people: Math.round(run.totals.peoplePct) })}</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <article class="panel" aria-live="polite">
+      <p class="example">{r.example}</p>
+      <p class="meta">
+        {r.asked.split(/(\{user\}|\{site\})/).map((part: string) =>
+          part === '{user}' ? <a class="link" href={f.au}>{fill(r.user, { id: f.a })}</a>
+          : part === '{site}' ? <a class="link" href={new URL(f.u).origin}>{siteName(f.site)}</a>
+          : part)}
+        {' · '}<a class="link" href={f.lu}>{f.l}</a>
+      </p>
+      <p class="title"><a href={f.u}>{f.t}</a></p>
+      <div class="cols">
+        {(['off', 'on'] as const).map((side) => {
+          const x = f.x[side];
+          const lead = x.b[x.b.length - 1];
+          return (
+            <div class="col window" data-side={side} data-ui>
+              <p class="col-head">{side === 'off' ? r.off : r.on}</p>
+              <div class="excerpt">
+                {x.b.slice(0, -1).map((text) => <p class="ctx">{text}</p>)}
+                <p>{lead && <span class="ctx">{lead} </span>}<span class="said">{marks(x.s, x.m).map((p) => (p.hit ? <mark>{p.text}</mark> : p.text))}</span>{x.a[0] && <span class="ctx"> {x.a[0]}</span>}</p>
+                {x.a.slice(1).map((text) => <p class="ctx">{text}</p>)}
+              </div>
+              <p class="words">{fill(r.excerpt, { n: x.w })}</p>
+            </div>
+          );
+        })}
+      </div>
+      <p class="key">{r.wavy}</p>
+      <button class="both plate" type="button" aria-expanded="false" hidden><span class="label">{r.readBoth}</span><span class="chev" aria-hidden="true"></span></button>
+      <div class="full" hidden></div>
+    </article>
+    <p class="foot">{fill(r.foot, { on: Math.round(run.totals.words.on), off: Math.round(run.totals.words.off) })}</p>
+  </div>
+</section>
+
+<style>
+  .head { row-gap: 1rem; }
+  h2 { grid-column: 1 / span 8; font-size: var(--step-head); }
+  .statement { grid-column: 1 / span 8; max-width: 46ch; font-size: var(--step-lead); line-height: 1.35; }
+  .dots { grid-column: 1 / -1; }
+  .swatch { display: inline-block; width: 0.8em; height: 0.8em; margin-right: 0.45em; border-radius: 50%; background: #3a5249; vertical-align: -0.08em; }
+  .swatch.on { background: var(--amber); margin-left: 0.2em; }
+
+  /* The two maps side by side, so the difference reads in one look. */
+  .maps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem clamp(2rem, 1rem + 3vw, 4.5rem); margin-top: clamp(2rem, 1.5rem + 1.5vw, 3rem); }
+  .map { margin: 0; display: grid; gap: 1rem; align-content: start; }
+  .count { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 0.4rem 1rem; }
+  .side { grid-column: 1 / -1; font-family: var(--display); font-size: var(--step-lead); line-height: 1.15; }
+  .map[data-side='off'] .side { color: var(--amber); }
+  :lang(zh-Hans) .side { font-weight: 700; }
+  .figure { font-family: var(--display); font-weight: 500; font-size: var(--step-display); line-height: 0.8; letter-spacing: -0.04em; margin-left: -0.04em; }
+  .map[data-side='off'] .figure { color: var(--amber); }
+  .caption { max-width: 20ch; padding-bottom: 0.1em; color: var(--muted); font-size: var(--step-body); line-height: 1.3; }
+  .plot { position: relative; }
+  .tip { position: absolute; left: 0; top: 0; z-index: 2; max-width: 22rem; padding: 0.55rem 0.85rem; background: var(--bone); color: var(--night); font-size: var(--step-small); line-height: 1.35; pointer-events: none; }
+  .map canvas { width: 100%; height: auto; aspect-ratio: 25 / 7; cursor: pointer; touch-action: manipulation; }
+  .districts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0 4%; margin-bottom: 0.6rem; color: var(--muted); font-size: var(--step-small); }
+  .districts .num { color: var(--ink); }
+  .map[data-side='off'] .districts .num { color: var(--amber); }
+  .controls { grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 0.5rem 1.5rem; }
+  .play { background: var(--bone); color: var(--night); grid-row: span 2; }
+  @media (hover: hover) and (pointer: fine) { .play:hover { background: var(--amber); } }
+  .scrub { display: flex; }
+  .scrub input { width: 100%; accent-color: var(--amber); min-height: 44px; }
+  /* One line: where the run is while it plays, then the invitation to tap. */
+  .status { grid-column: 2; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+  .scrub[hidden] + .status { grid-column: 1 / -1; }
+  .legend { grid-column: 1 / -1; max-width: 72ch; }
+
+  /* The question, then both answers as excerpts at the same point, as the README shows them. */
+  .panel { margin-top: clamp(2.5rem, 2rem + 1.5vw, 3.5rem); --ctx: #8a9b90; overflow: clip; overflow-clip-margin: 0.75rem; }
+  .example { margin-bottom: 0.5rem; color: var(--amber); }
+  .meta { color: var(--muted); }
+  .title { margin-top: 0.4rem; font-family: var(--display); font-size: var(--step-lead); line-height: 1.2; max-width: 48ch; text-wrap: balance; }
+  .title a { text-decoration: none; }
+  @media (hover: hover) and (pointer: fine) { .title a:hover { text-decoration: underline; } }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); margin-top: 1.25rem; }
+  .col { display: flex; flex-direction: column; gap: 1rem; min-width: 0; padding: clamp(1.25rem, 0.8rem + 1.2vw, 2rem); background: var(--surface); }
+  .col-head { color: var(--muted); }
+  .excerpt { display: grid; gap: 0.75em; font-size: var(--step-body); line-height: 1.55; max-width: 62ch; }
+  .ctx { color: var(--ctx); }
+  .said { color: var(--ink); }
+  mark { background: none; color: inherit; text-decoration: underline wavy var(--amber); text-decoration-thickness: 2px; text-underline-offset: 0.3em; text-decoration-skip-ink: none; }
+  .words { margin-top: auto; color: var(--muted); }
+  .key { margin-top: 1rem; color: var(--muted); }
+  .both { margin-top: 1.25rem; background: var(--bone); color: var(--night); }
+  @media (hover: hover) and (pointer: fine) { .both:hover { background: var(--amber); } }
+  /* The chevron points down to the answers, and up once they are open. */
+  .chev { width: 0.5em; height: 0.5em; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-0.12em) rotate(45deg); transition: transform var(--t-spring) var(--spring); }
+  .both[aria-expanded='true'] .chev { transform: translateY(0.12em) rotate(225deg); }
+  .full { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem clamp(1.5rem, 4vw, 4rem); margin-top: 1.25rem; }
+  .full :global(h4) { font-family: var(--text); font-size: var(--step-body); font-weight: 400; letter-spacing: 0; color: var(--muted); margin: 0 0 0.75rem; }
+  .full :global(p), .full :global(li) { font-size: var(--step-body); max-width: 60ch; margin: 0 0 0.75rem; }
+  .full :global(li) { padding-left: 1.1em; position: relative; }
+  .full :global(li)::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 0.38em; height: 0.38em; border-radius: 50%; background: var(--muted); }
+  .full :global(table) { width: 100%; border-collapse: collapse; margin: 0 0 1rem; font-size: var(--step-small); }
+  .full :global(th), .full :global(td) { text-align: left; vertical-align: top; padding: 0.4rem 0.6rem 0.4rem 0; border-bottom: 1px solid var(--rule-night); }
+  .full :global(th) { color: var(--muted); font-weight: 600; }
+  .full :global(mark) { background: none; color: inherit; text-decoration: underline wavy var(--amber); text-decoration-thickness: 2px; text-underline-offset: 0.3em; text-decoration-skip-ink: none; }
+  .foot { margin-top: 2rem; max-width: 72ch; }
+
+  @media (max-width: 1199px) {
+    .maps { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 900px) {
+    h2, .statement { grid-column: 1 / -1; }
+    .cols, .full { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .statement { font-size: var(--step-body); }
+    .controls { grid-template-columns: minmax(0, 1fr); }
+    .play { grid-row: auto; justify-self: start; }
+    .status { grid-column: 1; }
+  }
+</style>
+
+<script>
+  import { initMap } from '../scripts/map';
+  document.querySelectorAll<HTMLElement>('.maps').forEach(initMap);
+</script>

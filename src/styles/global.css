@@ -1,0 +1,244 @@
+/* Grounded Copy product page.
+   Colours are the named colours of the Grounded Copy identity.
+   Each section sets one field; the field sets the roles its children use. */
+
+/* Newsreader's own metrics (ascent 0.735 em, descent 0.265 em) set capitals a tenth of an em
+   above the middle of their line, and Chinese characters, which reach 0.85 em, rise out of it.
+   These overrides centre the capitals; the line still measures 1 em. */
+@font-face {
+  font-family: 'Newsreader';
+  src: url('../assets/fonts/Newsreader-Variable.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 83.5%;
+  descent-override: 16.5%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --night: #0f2620;
+  --night-paper: #16302a;
+  --bone: #ece6d9;
+  --sage: #a3ae9f;
+  --ghost-night: #6b7e73;
+  --stone-night: #3a5249;
+  --rule-night: #27423b;
+  --amber: #f2b33d;
+  --mint: #7fc8a9;
+  --forest: #13332b;
+  --sand: #f3efe6;
+  --paper: #fbf9f4;
+  --clay: #6c665a;
+  --ghost: #918772;
+  --stone: #cfc7b6;
+  --ochre: #b5690a;
+
+  /* Sizes at 1920 px: 15, 18, 24, 40, 56, 104 and 136 px. The page scales as a whole past that. */
+  --step-small: clamp(0.875rem, 0.83rem + 0.12vw, 0.9375rem);
+  --step-body: clamp(1rem, 0.93rem + 0.2vw, 1.125rem);
+  --step-lead: clamp(1.1875rem, 1rem + 0.5vw, 1.5rem);
+  --step-quote: clamp(1.5rem, 1.1rem + 1.4vw, 2.5rem);
+  --step-head: clamp(2rem, 1.3rem + 2.2vw, 3.5rem);
+  --step-display: clamp(3rem, 1rem + 5.6vw, 6.5rem);
+  --step-hero: clamp(3.5rem, 1rem + 7.5vw, 8.5rem);
+
+  --margin: clamp(1rem, 2.2vw, 2rem);
+  --gutter: clamp(0.75rem, 1.4vw, 1.5rem);
+  --section: clamp(3.5rem, 2rem + 4vw, 6.5rem);
+  --lap: clamp(1.25rem, 0.8rem + 1.2vw, 2rem);
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-ui: 240ms;
+  --t-reveal: 800ms;
+  /* The page's one spring: about 1.5% overshoot, then still. */
+  --spring: cubic-bezier(0.34, 1.2, 0.64, 1);
+  --t-spring: 560ms;
+
+
+  --font-display: 'Newsreader';
+  --display: var(--font-display), Georgia, serif;
+  --text: var(--font-text), system-ui, sans-serif;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { --spring: linear(0, 0.0185, 0.0663, 0.1337, 0.2127, 0.2975, 0.3834, 0.4671, 0.5463, 0.6194, 0.6857, 0.7445, 0.796, 0.8404, 0.8781, 0.9096, 0.9355, 0.9565, 0.9732, 0.9862, 0.9961, 1.0034, 1.0085, 1.0119, 1.014, 1.015, 1.0151, 1.0148, 1.014, 1.0129, 1.0117, 1.0104, 1.0091, 1.0078, 1.0066, 1.0055, 1.0046, 1.0037, 1.0029, 1.0023, 1); }
+}
+
+:root:lang(zh-Hans) {
+  --display: var(--font-display), var(--font-display-zh), 'Songti SC', serif;
+  --text: var(--font-text), var(--font-text-zh), 'PingFang SC', sans-serif;
+  /* Chinese characters fill the em, so the large sizes step down. */
+  --step-quote: clamp(1.375rem, 1rem + 1.2vw, 2.25rem);
+  --step-head: clamp(1.875rem, 1.2rem + 2vw, 3.25rem);
+  --step-display: clamp(2.75rem, 1rem + 4.8vw, 5.5rem);
+  --step-hero: clamp(3rem, 1rem + 6.4vw, 7.25rem);
+}
+
+[data-field='night'] { --bg: var(--night); --ink: var(--bone); --muted: var(--sage); --struck: var(--ghost-night); --quiet: var(--stone-night); --surface: var(--night-paper); --point: var(--amber); --accent: var(--amber); --accent-ink: var(--night); --edge: rgb(255 255 255 / 0.09); color-scheme: dark; }
+[data-field='sand'] { --bg: var(--sand); --ink: var(--forest); --muted: var(--clay); --struck: var(--ghost); --quiet: var(--stone); --surface: var(--paper); --point: var(--ochre); --accent: var(--forest); --accent-ink: var(--sand); --edge: rgb(255 255 255 / 0.7); color-scheme: light; }
+[data-field='stone'] { --bg: var(--stone); --ink: var(--forest); --muted: #42584e; --struck: #7d7564; --quiet: #b9b09d; --surface: #d9d2c3; --point: var(--forest); --accent: var(--forest); --accent-ink: var(--sand); --edge: rgb(255 255 255 / 0.45); color-scheme: light; }
+[data-field='amber'] { --bg: var(--amber); --ink: var(--night); --muted: #3d3a1f; --struck: #8a6a2a; --quiet: #d99b2b; --surface: #f6c463; --point: var(--night); --accent: var(--night); --accent-ink: var(--amber); --edge: rgb(255 255 255 / 0.4); color-scheme: light; }
+[data-field='sage'] { --bg: var(--sage); --ink: var(--night); --muted: #2b3d36; --struck: #5f6d63; --quiet: #8f9b8b; --surface: #b3bdb0; --point: var(--night); --accent: var(--night); --accent-ink: var(--bone); --edge: rgb(255 255 255 / 0.35); color-scheme: light; }
+[data-field] { background-color: var(--bg); color: var(--ink); }
+
+*, *::before, *::after { box-sizing: border-box; }
+/* Past 1920 px the whole page scales with the window, so a 4K screen at 100% shows the 1920 px composition. */
+/* The page's ground is sand; night shows past the top and bottom edges, where the hero and footer are night. */
+html { font-size: max(100%, 0.8333vw); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 1rem; background: var(--night); }
+body {
+  margin: 0;
+  background: var(--sand);
+  font-family: var(--text);
+  font-size: var(--step-body);
+  line-height: 1.5;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+img, svg, canvas, video { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+h1, h2, h3, p, ul, ol, figure, blockquote, dl, dd { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration-thickness: 0.07em; text-underline-offset: 0.18em; }
+
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-wrap: balance;
+  hyphens: none;
+}
+:lang(zh-Hans) h1, :lang(zh-Hans) h2, :lang(zh-Hans) h3 { font-weight: 700; letter-spacing: 0; line-height: 1.2; }
+p { text-wrap: pretty; }
+code, kbd, pre, samp { font-family: var(--font-code), ui-monospace, monospace; font-size: var(--step-small); }
+pre { margin: 0; white-space: pre-wrap; }
+:lang(zh-Hans) :is(code, kbd, pre, samp) { font-family: var(--font-code), var(--font-text-zh), monospace; }
+.point { color: var(--point); }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+
+::selection { background: var(--amber); color: var(--night); }
+:focus-visible { outline: 3px solid var(--point); outline-offset: 3px; border-radius: 2px; }
+
+.wrap { padding-inline: var(--margin); max-width: 120rem; margin-inline: auto; }
+
+/* A window sits off its ground: an inner edge light, a second sheet showing under its lower
+   edge, then three shadows from near to far. The tokens live here so --sheet can vary by field. */
+.window {
+  --sheet: rgb(8 20 17 / 0.2);
+  --window: 0 0 0 1px rgb(255 255 255 / 0.06) inset, 0 1px 0 rgb(255 255 255 / 0.1) inset, 0 0.85rem 0 -0.5rem var(--sheet), 0 2px 4px rgb(8 20 17 / 0.16), 0 12px 24px -8px rgb(8 20 17 / 0.26), 0 40px 80px -24px rgb(8 20 17 / 0.4);
+  --window-up: 0 0 0 1px rgb(255 255 255 / 0.08) inset, 0 1px 0 rgb(255 255 255 / 0.14) inset, 0 1.1rem 0 -0.5rem var(--sheet), 0 4px 8px rgb(8 20 17 / 0.18), 0 22px 40px -10px rgb(8 20 17 / 0.34), 0 60px 110px -28px rgb(8 20 17 / 0.5);
+  position: relative;
+  border-radius: 0.875rem;
+  box-shadow: var(--window); /* taste-skill-ignore: layered windows, asked for in review */
+}
+[data-field='night'] .window { --sheet: rgb(255 255 255 / 0.07); }
+/* A terminal's caret blinks; it holds still under reduced motion. */
+.caret { display: inline-block; width: 0.55em; height: 1.1em; margin-left: 0.15em; background: currentColor; vertical-align: -0.2em; opacity: 0.85; }
+@media (prefers-reduced-motion: no-preference) { .caret { animation: caret 1.1s steps(1) infinite; } }
+@keyframes caret { 50% { opacity: 0; } }
+.lights { display: inline-flex; gap: 0.4em; }
+.lights > span { width: 0.62em; height: 0.62em; border-radius: 50%; background: rgb(255 255 255 / 0.2); }
+.lights > span:first-child { background: var(--amber); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); }
+.section { padding-block: var(--section); }
+
+/* Each section after the first is a sheet laid over the one before: rounded top corners and a lit
+   top edge. The covered sheet darkens just above the seam, under the upper sheet's edge. */
+main > section {
+  --seam: inset 0 calc(-1 * var(--lap) - 1rem) 1.25rem -1rem rgb(8 20 17 / 0.4);
+  box-shadow: var(--seam); /* taste-skill-ignore: stacked sheets, asked for in review */
+}
+main > section:not(:first-of-type), body > footer {
+  position: relative;
+  isolation: isolate;
+  margin-top: calc(-1 * var(--lap));
+  border-radius: var(--lap) var(--lap) 0 0;
+  box-shadow: inset 0 1px 0 var(--edge), var(--seam, 0 0 #0000); /* taste-skill-ignore: stacked sheets, asked for in review */
+}
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Leaning: a window, card or button turns toward the pointer (the script sets --rx and --ry), lifts
+   or grows by --lift and --grow, and springs back. The values stay on the element they are set on. */
+@property --rx { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --ry { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --lift { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --grow { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --x { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
+[data-lean], .plate {
+  transform: perspective(50rem) rotateX(var(--rx)) rotateY(var(--ry)) translate(var(--x), var(--lift)) scale(var(--grow));
+  transition: transform var(--t-spring) var(--spring);
+}
+[data-lean].is-pressed { --grow: 0.97; transition-duration: 120ms; }
+
+/* The plate: the mark's bar with round ends. Buttons are plates, with a darker lower lip for their
+   thickness: they rise a little under the pointer and sink when pressed. */
+.plate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 3rem;
+  padding: 0.7em 1.6em;
+  border: 0;
+  border-bottom: 0.2rem solid rgb(8 20 17 / 0.3);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--text);
+  font-weight: 600;
+  font-size: var(--step-body);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: clip;
+  text-decoration: none;
+  transition: transform var(--t-spring) var(--spring), background-color var(--t-hover) ease, color var(--t-hover) ease;
+}
+.plate:active, .plate.is-pressed { --lift: 0.1rem; --grow: 0.97; transition-duration: 120ms; }
+@media (hover: hover) and (pointer: fine) { .plate:hover { --lift: -0.12rem; --grow: 1.02; } .plate:hover:active { --lift: 0.1rem; --grow: 0.97; } }
+.link {
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  transition: text-decoration-color var(--t-hover) ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .link:hover { text-decoration-color: currentColor; }
+}
+
+/* Entrances settle out of a short blur. Content stays visible without script and under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-rise] {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(var(--rise, 1.25rem));
+    transition: opacity 600ms var(--ease-out), filter 600ms var(--ease-out), transform 900ms var(--spring);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  .js [data-rise].is-in { opacity: 1; filter: none; transform: none; }
+}
+
+/* Scroll-linked moves, where the browser runs them off the scroll position. A window or card
+   stands up from a tilt as it comes into view, like a page lifted off a desk. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-tilt] { transform-origin: 50% 100%; animation: tilt-in linear both; animation-timeline: view(); animation-range: entry 0% cover 32%; }
+  }
+}
+@keyframes tilt-in {
+  from { transform: perspective(60rem) rotateX(14deg) translateY(2.5rem) scale(0.95); }
+  to { transform: perspective(60rem) rotateX(0deg) translateY(0) scale(1); }
+}
+
+/* Chinese reads best at about 30 to 36 characters a line. */
+:lang(zh-Hans) .legend, :lang(zh-Hans) .foot, :lang(zh-Hans) .note, :lang(zh-Hans) .working, :lang(zh-Hans) .statement { max-width: 34em; }
+.clock, .meta { max-width: 72ch; }

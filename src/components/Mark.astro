@@ -1,0 +1,12 @@
+---
+// The Grounded Copy mark: a stem, two plates and the point.
+// Plates take currentColor; the point takes --point.
+interface Props { class?: string; title?: string }
+const { class: className, title } = Astro.props;
+---
+<svg class={className} viewBox="0 0 68 77" role={title ? 'img' : undefined} aria-label={title} aria-hidden={title ? undefined : 'true'} focusable="false">
+  <rect x="29" y="0" width="10" height="22" rx="1" fill="currentColor" />
+  <rect x="0" y="21" width="68" height="12" rx="6" fill="currentColor" />
+  <rect x="12" y="41" width="44" height="12" rx="6" fill="currentColor" />
+  <circle cx="34" cy="67" r="10" fill="var(--point)" />
+</svg>

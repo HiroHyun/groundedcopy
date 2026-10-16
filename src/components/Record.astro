@@ -1,0 +1,63 @@
+---
+import run from '../data/run.json';
+const { t } = Astro.props;
+const r = t.record;
+const base = import.meta.env.BASE_URL;
+const mb = (run.zip.bytes / 1e6).toFixed(1);
+---
+<section class="record" data-field="sand" aria-labelledby="record-title">
+  <div class="panel" data-field="night">
+    <div class="left">
+      <h2 id="record-title" data-rise>{r.heading.map((line: string, i: number) => <span>{line}{i === r.heading.length - 1 && <span class="point">{t.lang === 'zh' ? '。' : '.'}</span>}</span>)}</h2>
+      <div data-tilt>
+        <div class="shot window" data-ui data-lean>
+          <p class="bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span>{t.where.terminal}</span></p>
+          <pre><samp><span class="prompt">$</span>cd {run.zip.name.replace('.zip', '')}{'\n'}<span class="prompt">$</span>python -I -B audit.py{'\n'}<span class="pass">PASS: file hashes, provenance, attribution, complete-path accounting, and exact recount</span></samp></pre>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="block" data-rise>
+        <h3>{r.holdsTitle}</h3>
+        <p>{r.holds}</p>
+      </div>
+      <p data-rise style="--i:1"><a class="plate" href={`${base}record/${run.zip.name}`} download>{r.download}<span class="size">{r.size.replace('{mb}', mb)}</span></a></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .record { padding: var(--lap); }
+  /* A night slab set into the sheet, lit along its top edge. */
+  .panel {
+    border-radius: 1.25rem;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), inset 0 -3px 0 rgb(0 0 0 / 0.25); /* taste-skill-ignore: raised slab, asked for in review */
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(2.5rem, 1rem + 4vw, 6rem);
+    padding: clamp(1.75rem, 1rem + 3vw, 4.5rem);
+  }
+  .left { display: grid; align-content: start; gap: clamp(1.75rem, 1rem + 2vw, 3rem); }
+  h2 { font-size: var(--step-head); color: var(--ink); }
+  h2 > span { display: block; }
+  :lang(zh-Hans) h2 > span { display: inline; }
+  .shot {
+    background: var(--night-paper);
+    color: var(--bone);
+    line-height: 1.65;
+  }
+  .bar { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.25rem; background: rgb(255 255 255 / 0.06); border-radius: 0.875rem 0.875rem 0 0; color: var(--sage); }
+  .shot pre { padding: 1.1rem 1.5rem 1.35rem; }
+  .prompt { color: var(--amber); margin-right: 0.6em; }
+  .pass { color: var(--mint); }
+  .right { display: grid; align-content: center; gap: clamp(1.5rem, 1rem + 1.5vw, 2.5rem); }
+  h3 { font-size: var(--step-lead); line-height: 1.2; margin-bottom: 0.75rem; }
+  .block p { color: var(--ink); max-width: 40ch; }
+  .plate { background: var(--amber); color: var(--night); flex-wrap: wrap; }
+  .size { font-weight: 400; opacity: 0.75; }
+  @media (hover: hover) and (pointer: fine) { .plate:hover { background: var(--bone); } }
+
+  @media (max-width: 900px) {
+    .panel { grid-template-columns: 1fr; }
+  }
+</style>

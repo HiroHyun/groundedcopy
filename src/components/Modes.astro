@@ -1,0 +1,126 @@
+---
+const { t } = Astro.props;
+const m = t.modes;
+---
+<section class="modes section" data-field="night" aria-labelledby="modes-title">
+  <div class="wrap grid">
+    <h2 id="modes-title" data-rise>{m.heading}</h2>
+    <div class="names">
+      <div class="tabs" role="tablist" aria-labelledby="modes-title" data-rise style="--i:1">
+        {m.items.map((item: any, i: number) => (
+          <button type="button" role="tab" id={`mode-tab-${item.name}`} aria-controls={`mode-${item.name}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+            {item.name}
+          </button>
+        ))}
+        <span class="point" aria-hidden="true">.</span>
+      </div>
+      <p class="saved" data-rise style="--i:2">{m.saved}</p>
+    </div>
+    <div class="panels">
+      {m.items.map((item: any, i: number) => (
+        <div class="panel" role="tabpanel" id={`mode-${item.name}`} aria-labelledby={`mode-tab-${item.name}`} data-first={i === 0 ? 'true' : undefined}>
+          <p class="what">{item.text}</p>
+          {item.warn && <p class="warn" data-lean>{item.warn}</p>}
+          <div class="cmd window" data-ui data-lean>
+            <p class="bar" aria-hidden="true"><span class="lights"><span></span><span></span><span></span></span></p>
+            <dl>
+              <div><dt>{m.claude}</dt><dd><code><span class="prompt" aria-hidden="true">›</span>/grounded-copy:grounded {item.name}</code></dd></div>
+              <div><dt>{m.codex}</dt><dd><code><span class="prompt" aria-hidden="true">›</span>$grounded-profile {item.name}</code></dd></div>
+            </dl>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: center; row-gap: clamp(2rem, 1rem + 2vw, 3rem); }
+  h2 { grid-column: 1 / -1; font-size: var(--step-head); }
+  .names { grid-column: 1 / span 6; }
+  /* The three names stand an equal ink gap apart, 0.2em, measured on the rendered glyphs:
+     "copy" has no ascenders and hangs its descenders, "off" rises to its f, so the margins differ. */
+  .tabs { position: relative; display: grid; justify-items: start; font-size: var(--step-display); padding-block: 0.12em 0.3em; }
+  [role='tab'] {
+    border: 0;
+    background: none;
+    padding: 0;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 1em;
+    line-height: 0.6;
+    letter-spacing: -0.03em;
+    color: var(--quiet);
+    transition: color var(--t-hover) ease;
+  }
+  [role='tab']:nth-of-type(2) { margin-top: 0.14em; }
+  [role='tab']:nth-of-type(3) { margin-top: 0.58em; }
+  [role='tab'][aria-selected='true'] { color: var(--ink); }
+  [role='tab'][aria-selected='true']::after { content: '.'; color: var(--point); }
+  /* With script, one point travels to the chosen name. */
+  .point { display: none; position: absolute; left: 0; top: 0; font-family: var(--display); font-weight: 500; line-height: 0.6; color: var(--point); pointer-events: none; transition: transform var(--t-spring) var(--spring); }
+  :global(.js) .point { display: block; }
+  :global(.js) [role='tab'][aria-selected='true']::after { content: none; }
+  @media (hover: hover) and (pointer: fine) { [role='tab']:hover { color: var(--muted); } [role='tab'][aria-selected='true']:hover { color: var(--ink); } }
+  .saved { margin-top: 2rem; color: var(--muted); }
+  .panels { grid-column: 7 / span 6; }
+  .panel + .panel { margin-top: 3rem; }
+  :global(.js) .panel + .panel { margin-top: 0; }
+  :global(.js) .panel:not(.is-on) { display: none; }
+  .what { font-size: var(--step-lead); line-height: 1.35; max-width: 28ch; }
+  /* An amber tile with a lit top edge and a darker lower lip, so it stands off the night ground. */
+  .warn { margin-top: 1.25rem; padding: 1rem 1.25rem 1.2rem; background: var(--amber); color: var(--night); max-width: 42ch; border-radius: 0.875rem; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.55), inset 0 -0.3rem 0 rgb(8 20 17 / 0.2), inset 0 0 0 1px rgb(8 20 17 / 0.08); } /* taste-skill-ignore: raised tile, asked for in review */
+  /* The commands on a card, with the other two modes' cards stacked under it like a deck. */
+  .cmd { margin-top: 2rem; max-width: 34rem; background: var(--night-paper); color: var(--bone); }
+  [data-ui].cmd { --sheet: rgb(255 255 255 / 0.1); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), var(--window), 0 1.65rem 0 -1rem rgb(255 255 255 / 0.06); }
+  .bar { display: flex; padding: 0.7rem 1.1rem; background: rgb(255 255 255 / 0.06); border-radius: 0.875rem 0.875rem 0 0; }
+  dl { display: grid; gap: 1rem; padding: 1.1rem 1.25rem 1.35rem; }
+  dt { color: var(--sage); font-size: var(--step-small); }
+  dd { margin: 0.3rem 0 0; }
+  code { overflow-wrap: anywhere; }
+  .prompt { color: var(--amber); margin-right: 0.6em; }
+  @media (max-width: 900px) { .names, .panels { grid-column: 1 / -1; } }
+</style>
+
+<script>
+  import { morph, reduce, SPRING } from '../scripts/motion';
+
+  document.querySelectorAll<HTMLElement>('.modes').forEach((section) => {
+    const tabs = [...section.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...section.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    const box = section.querySelector<HTMLElement>('.panels')!;
+    const point = section.querySelector<HTMLElement>('.point')!;
+    let current = -1;
+    const place = () => {
+      const tab = tabs[current];
+      point.style.transform = `translate(${tab.offsetLeft + tab.offsetWidth}px, ${tab.offsetTop}px)`;
+    };
+    new ResizeObserver(() => current >= 0 && place()).observe(section);
+    function select(i: number, focus = false) {
+      tabs.forEach((tab, j) => {
+        tab.setAttribute('aria-selected', String(i === j));
+        tab.tabIndex = i === j ? 0 : -1;
+      });
+      const show = () => panels.forEach((panel, j) => panel.classList.toggle('is-on', i === j));
+      if (current < 0) show();
+      else if (current !== i) {
+        morph(box, show, panels[i]);
+        // The chosen mode's card comes up off the deck.
+        if (!reduce.matches) panels[i].querySelector('.cmd')?.animate([{ transform: 'translateY(1.6rem) scale(0.94)', opacity: 0.4 }, { transform: 'none', opacity: 1 }], { duration: 640, easing: SPRING });
+      }
+      current = i;
+      place();
+      if (focus) tabs[i].focus();
+    }
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (e) => {
+        const step = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        select((i + step + tabs.length) % tabs.length, true);
+      });
+    });
+    select(0);
+  });
+</script>

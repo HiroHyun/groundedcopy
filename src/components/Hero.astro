@@ -1,0 +1,162 @@
+---
+import Mark from './Mark.astro';
+const { t } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const zh = t.lang === 'zh';
+const home = zh ? `${base}zh/` : base;
+const repo = 'https://github.com/HiroHyun/grounded-copy';
+// The GitHub mark, from GitHub's Octicons (mark-github-24), shown in white as GitHub's logo rules ask.
+const mark = 'M12.5.75C6.146.75 1 5.896 1 12.25c0 5.089 3.292 9.387 7.863 10.91.575.101.79-.244.79-.546 0-.273-.014-1.178-.014-2.142-2.889.532-3.636-.704-3.866-1.35-.13-.331-.69-1.352-1.18-1.625-.402-.216-.977-.748-.014-.762.906-.014 1.553.834 1.769 1.179 1.035 1.74 2.688 1.25 3.349.948.1-.747.402-1.25.733-1.538-2.559-.287-5.232-1.279-5.232-5.678 0-1.25.445-2.285 1.178-3.09-.115-.288-.517-1.467.115-3.048 0 0 .963-.302 3.163 1.179.92-.259 1.897-.388 2.875-.388.977 0 1.955.13 2.875.388 2.2-1.495 3.162-1.179 3.162-1.179.633 1.581.23 2.76.115 3.048.733.805 1.179 1.825 1.179 3.09 0 4.413-2.688 5.39-5.247 5.678.417.36.776 1.05.776 2.128 0 1.538-.014 2.774-.014 3.162 0 .302.216.662.79.547C20.709 21.637 24 17.324 24 12.25 24 5.896 18.854.75 12.5.75Z';
+---
+<section id="top" class="hero" data-field="night">
+  <header class="nav wrap">
+    <a class="brand" href={home}>
+      <Mark class="brand-mark" />
+      <span>Grounded Copy</span>
+    </a>
+    <nav aria-label={t.nav.label}>
+      <ul>
+        <li class="wide"><a class="link" href="#results">{t.nav.results}</a></li>
+        <li class="wide"><a class="link" href="#runs">{t.nav.runs}</a></li>
+        <li class="wide"><a class="link" href="#install">{t.nav.install}</a></li>
+        <li><a class="link" href={`${base}${t.nav.otherHref}`} hreflang={t.nav.otherLang} lang={t.nav.otherLang}>{t.nav.other}</a></li>
+        <li><a class="gh plate" href={repo} aria-label={t.nav.github} title={t.nav.github}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={mark} /></svg></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="shape" aria-hidden="true">
+    <svg viewBox="0 0 68 77" focusable="false">
+      <rect class="stem" x="29" y="-40" width="10" height="62" rx="1" />
+      <rect class="plate-1" x="0" y="21" width="68" height="12" rx="6" />
+      <rect class="plate-2" x="12" y="41" width="44" height="12" rx="6" />
+      <circle class="dot" cx="34" cy="67" r="10" />
+    </svg>
+  </div>
+
+  <div class="copy wrap" id="main">
+    <h1 class="lines">
+      {t.hero.title.map((line: string, i: number) => (
+        <span class="line"><span data-line style={`--i:${i}`}>{line}{i === t.hero.title.length - 1 && <span class="point">{zh ? '。' : '.'}</span>}</span></span>
+      ))}
+    </h1>
+    <p class="lead" data-rise style="--i:3">{t.hero.lead}</p>
+    <p class="actions" data-rise style="--i:4">
+      <a class="plate" href="#install">{t.hero.install}</a>
+      <a class="link" href="#results">{t.hero.results}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .nav {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding-block: 1.5rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--display);
+    font-weight: 600;
+    font-variation-settings: 'opsz' 72;
+    font-size: var(--step-lead);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .brand :global(.brand-mark) { width: 1.6rem; height: auto; flex: none; }
+  .nav ul { display: flex; align-items: center; gap: clamp(1.25rem, 2.6vw, 2.75rem); font-size: var(--step-body); font-weight: 500; }
+  .gh { width: 2.75rem; height: 2.75rem; min-height: 0; padding: 0; background: #24463c; color: #fff; }
+  .gh svg { width: 1.4rem; height: 1.4rem; fill: currentColor; }
+  @media (hover: hover) and (pointer: fine) { .gh:hover { background: #2c5a4d; } }
+  .nav a { text-decoration-color: transparent; }
+  @media (hover: hover) and (pointer: fine) { .nav a:hover { text-decoration-color: currentColor; } }
+
+  .copy {
+    position: relative;
+    z-index: 1;
+    align-self: center;
+    width: 100%;
+    padding-bottom: 6vh;
+  }
+  h1 {
+    font-size: var(--step-hero);
+    line-height: 0.9;
+    letter-spacing: -0.035em;
+    margin-left: -0.04em;
+  }
+  :lang(zh-Hans) h1 { letter-spacing: 0; line-height: 1.1; }
+  /* The mask reaches past the line box so ascenders and Chinese characters keep their tops. */
+  .line { display: block; overflow: hidden; padding-block: 0.12em 0.16em; margin-block: -0.12em -0.16em; }
+  .line > span { display: block; }
+  .lead {
+    max-width: 34ch;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: var(--step-lead);
+    line-height: 1.35;
+  }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; margin-top: 2rem; }
+  .actions .plate { background: var(--amber); color: var(--night); }
+  @media (hover: hover) and (pointer: fine) { .actions .plate:hover { background: var(--bone); } }
+
+  /* The mark at enormous scale, entering from the right and cropped by the viewport. */
+  .shape { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .shape svg {
+    position: absolute;
+    height: 122vh;
+    width: auto;
+    top: calc(55% - 61vh);
+    left: max(54vw, calc(80% - 53.9vh));
+    overflow: visible;
+  }
+  .stem, .plate-1, .plate-2 { fill: #1d3d34; }
+  .dot { fill: var(--amber); }
+
+  /* On a phone the whole mark ends the hero: plates, then the point. */
+  @media (max-width: 760px) {
+    .hero { min-height: 0; grid-template-rows: auto auto auto; }
+    .nav .wide { display: none; }
+    .copy { align-self: start; padding-block: 8svh 0; }
+    .shape { position: relative; inset: auto; grid-row: 3; overflow: hidden; padding-bottom: 2.5rem; }
+    .shape svg { position: static; display: block; width: 70vw; height: auto; margin: calc(70vw * -21 / 68 + 2.5rem) -8vw 0 auto; }
+    .stem { display: none; }
+    .plate-1, .plate-2 { fill: #24463c; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) [data-line] { transform: translateY(125%); animation: line-up 1000ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 120ms + 200ms); }
+    .stem { animation: from-top 1100ms var(--ease-out) both 80ms; }
+    .plate-1 { animation: from-right 1200ms var(--ease-out) both 260ms; }
+    .plate-2 { animation: from-right 1200ms var(--ease-out) both 420ms; }
+    .dot { transform-box: fill-box; transform-origin: center; animation: drop 900ms var(--ease-out) both 760ms, breathe 5s ease-in-out 1.8s infinite alternate; }
+  }
+  /* As the hero scrolls away, the title drifts up faster than the page and the mark sinks a little slower. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero { view-timeline: --hero block; }
+      h1 { animation: title-out linear both; animation-timeline: --hero; animation-range: exit 0% exit 100%; }
+      .shape svg { animation: mark-out linear both; animation-timeline: --hero; animation-range: exit 0% exit 100%; }
+    }
+  }
+  @keyframes title-out { to { translate: 0 -35%; opacity: 0.25; } }
+  @keyframes mark-out { to { translate: 0 8%; scale: 1.05; } }
+  @keyframes line-up { to { transform: none; } }
+  @keyframes from-top { from { transform: translateY(-18px); } }
+  @keyframes from-right { from { transform: translateX(16px); opacity: 0; } }
+  @keyframes drop { from { transform: translateY(-6px) scale(0.6); opacity: 0; } }
+  @keyframes breathe { to { transform: scale(1.045); } }
+</style>

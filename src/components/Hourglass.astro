@@ -1,0 +1,71 @@
+---
+import run from '../data/run.json';
+const { t } = Astro.props;
+const h = t.hourglass;
+const T = run.totals;
+const n = (v: number, d = 0) => v.toLocaleString(t.lang === 'zh' ? 'zh-CN' : 'en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+// Grounded Copy against writing and then rewriting, as shares of the rewrite path.
+const less = (on: number, hz: number) => Math.round(((hz - on) / hz) * 100);
+const figures = [
+  { value: less(T.seconds.on, T.seconds.hz), caption: h.time },
+  { value: less(T.tokens.on, T.tokens.hz), caption: h.tokens },
+];
+const working = h.working
+  .replace('{on}', n(T.seconds.on, 1))
+  .replace('{hz}', n(T.seconds.hz, 1))
+  .replace('{tOn}', n(T.tokens.on))
+  .replace('{tHz}', n(T.tokens.hz));
+// Seconds per request on the two-request path: the median total, split by each
+// request's share of the summed time over the same 100 questions.
+const firstShare = T.secondsSum.off / T.secondsSum.hz;
+---
+<section class="hourglass section" data-field="sand" aria-labelledby="hourglass-title">
+  <div class="wrap grid">
+    <div class="text">
+      <h2 id="hourglass-title" data-rise>{h.heading}</h2>
+      <p class="lead" data-rise style="--i:1">{h.lead}</p>
+      <div class="figures">
+        {figures.map((f, i) => (
+          <p class="figure" data-rise style={`--i:${i + 2}`}><span class="big num">{f.value}<span class="unit">%</span></span><span class="caption">{f.caption}</span></p>
+        ))}
+      </div>
+      <p class="working" data-rise style="--i:4">{working}</p>
+    </div>
+    <div class="stage" data-tilt data-one={T.seconds.on} data-two={T.seconds.hz} data-first={firstShare}>
+      <canvas role="img" aria-label={h.label}></canvas>
+      <div class="glasses">
+        <div><p class="clock num" data-clock="one">{n(T.seconds.on, 1)} s</p><p>{h.one}</p></div>
+        <div><p class="clock num" data-clock="two">{n(T.seconds.hz, 1)} s</p><p>{h.two}</p></div>
+      </div>
+      <button class="play plate" type="button" hidden data-play={h.play} data-pause={h.pause} data-again={h.again}><span class="label">{h.play}</span></button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: center; row-gap: 2.5rem; }
+  .text { grid-column: 1 / span 6; }
+  h2 { font-size: var(--step-head); max-width: 12ch; }
+  .lead { margin-top: 1.25rem; max-width: 36ch; font-size: var(--step-lead); line-height: 1.35; }
+  .figures { display: grid; grid-template-columns: repeat(2, minmax(0, max-content)); gap: 1.5rem clamp(2rem, 1rem + 3vw, 4rem); margin-top: clamp(2rem, 1.5rem + 1.5vw, 3rem); }
+  .figure { display: grid; gap: 0.75rem; align-content: start; }
+  .big { font-family: var(--display); font-weight: 500; font-size: var(--step-display); line-height: 0.9; letter-spacing: -0.04em; margin-left: -0.05em; }
+  .unit { font-size: 0.45em; vertical-align: 0.95em; letter-spacing: 0; margin-left: 0.04em; }
+  .caption { font-size: var(--step-body); max-width: 14ch; text-wrap: balance; }
+  .working { margin-top: clamp(1.5rem, 1rem + 1vw, 2.25rem); max-width: 54ch; }
+  .stage { grid-column: 7 / -1; justify-self: center; width: min(100%, 34rem); display: grid; justify-items: center; }
+  canvas { width: 100%; height: auto; aspect-ratio: 1 / 0.9; }
+  .glasses { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); margin-top: 1rem; text-align: center; color: var(--muted); }
+  .glasses > div { display: grid; gap: 0.35rem; justify-items: center; }
+  .clock { font-family: var(--display); font-size: var(--step-lead); color: var(--ink); }
+  .play { margin-top: 1.25rem; }
+
+  @media (max-width: 900px) {
+    .text, .stage { grid-column: 1 / -1; }
+  }
+</style>
+
+<script>
+  import { initHourglass } from '../scripts/hourglass';
+  document.querySelectorAll<HTMLElement>('.hourglass .stage').forEach(initHourglass);
+</script>
