@@ -2,3 +2,9 @@ node_modules/
 dist/
 .astro/
 .taste-skill/inspect/
+
+# Private project records and agent instructions
+/docs/
+/_local/
+/[Aa][Gg][Ee][Nn][Tt][Ss].[Mm][Dd]
+/[Cc][Ll][Aa][Uu][Dd][Ee].[Mm][Dd]
